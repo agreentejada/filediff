@@ -81,7 +81,7 @@ namespace filediff
 
             //Adds any dll differences.
             Console.WriteLine("Comparing runtimes to find unique and updated binaries.");
-            var diffdlls = ParseDependencies.CompareBinaryDirectories(oldDirectory, newDirectory);
+            var diffdlls = CompareDependencies.ComparyBinaryDirectories(oldDirectory, newDirectory);
             diffs.AddRange(diffdlls);
 
             foreach (var diff in diffs)

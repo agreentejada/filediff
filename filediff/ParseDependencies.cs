@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyModel;
@@ -7,7 +8,37 @@ namespace filediff
 {
     public static class ParseDependencies
     {
-        public static DependencyContext Import(string depsPath)
+        public static List<FileInfo> CompareBinaryDirectories(DirectoryInfo oldDirectory, DirectoryInfo newDirectory)
+        {
+            var olddepquery = oldDirectory.GetFiles("*.deps.json", SearchOption.AllDirectories);
+            var newdepquery = newDirectory.GetFiles("*.deps.json", SearchOption.AllDirectories);
+
+            if (olddepquery.Length == 0)
+            {
+                throw new FileNotFoundException($"No dependency file for {oldDirectory.Name} could be found.");
+            }
+            if (newdepquery.Length == 0)
+            {
+                throw new FileNotFoundException($"No dependency file for {newDirectory.Name} could be found.");
+            }
+
+            var oldcontext = Import(olddepquery[0].FullName);
+            var newcontext = Import(newdepquery[0].FullName);
+
+            //Retrieve a list of runtimeFiles that compare old and new, the relative paths of the runtime files should
+            //match with real paths in newDirectory.
+            var extractedruntimes = CompareRuntimes(oldcontext, newcontext);
+
+            List<FileInfo> diffdlls = new List<FileInfo>();
+            foreach (var extract in extractedruntimes)
+            {
+                diffdlls.Add(new FileInfo(Path.Combine(newDirectory.FullName, extract.Path)));
+            }
+
+            return diffdlls;
+        }
+
+        static DependencyContext Import(string depsPath)
         {
             using (var filestream = File.OpenRead(depsPath))
             {
@@ -16,7 +47,7 @@ namespace filediff
         }
 
         //Now that the JSON has been parsed, it'll be pretty simple to check for version update in new and extract them.
-        public static List<RuntimeFile> CompareRuntimes(DependencyContext oldctxt, DependencyContext newctxt)
+        static List<RuntimeFile> CompareRuntimes(DependencyContext oldctxt, DependencyContext newctxt)
         {
             List<RuntimeFile> extractedFiles = new List<RuntimeFile>();
 
@@ -36,6 +67,7 @@ namespace filediff
                 if (!oldquery.Any())
                 {
                     extractedFiles.Add(file);
+                    Console.WriteLine("New binary " + file.Path + " was not found in OLD.");
                     continue;
                 }
                 else
@@ -47,6 +79,7 @@ namespace filediff
                         string.IsNullOrEmpty(file.AssemblyVersion) ||
                         string.IsNullOrEmpty(file.FileVersion))
                     {
+                        Console.WriteLine("Binary " + file.Path + " could not be compared.");
                         extractedFiles.Add(file);
                         continue;
                     }
@@ -54,6 +87,7 @@ namespace filediff
                     if (file.FileVersion != oldfile.FileVersion ||
                         file.AssemblyVersion != oldfile.AssemblyVersion)
                     {
+                        Console.WriteLine("Binary " + file.Path + " had a different Assembly/FileVersion in NEW than OLD.");
                         extractedFiles.Add(file);
                         continue;
                     }

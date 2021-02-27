@@ -13,19 +13,19 @@ namespace filediff
             string newpath = @"D:\Documents\Coding\filediff\publish";
             string publishpath = @"D:\Documents\Coding\filediff";
 
-            //var diffclient = new FileDiff(oldpath, newpath, publishpath);
-            //diffclient.Compare();
+            var diffclient = new FileDiff(oldpath, newpath, publishpath);
+            diffclient.Compare();
 
             //Testing a single file compared to other binaries.
             //MeasureBinaries.Test(oldpath, newpath);
 
-            //Attempt to extract deps.json.
-            string olddepspath = Path.Combine(oldpath, "DropboxClient.deps.json");
-            string newdepspath = Path.Combine(newpath, "DropboxClient.deps.json");
-            var result = ParseDependencies.CompareRuntimes(ParseDependencies.Import(olddepspath),
-                ParseDependencies.Import(newdepspath));
+            ////Attempt to extract deps.json.
+            //string olddepspath = Path.Combine(oldpath, "DropboxClient.deps.json");
+            //string newdepspath = Path.Combine(newpath, "DropboxClient.deps.json");
+            //var result = ParseDependencies.CompareRuntimes(ParseDependencies.Import(olddepspath),
+            //    ParseDependencies.Import(newdepspath));
 
-            Console.WriteLine(JsonSerializer.Serialize(result));
+            //Console.WriteLine(JsonSerializer.Serialize(result));
         }
     }
 }

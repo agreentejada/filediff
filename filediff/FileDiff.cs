@@ -76,8 +76,15 @@ namespace filediff
                 dir.Delete(true);
             }
 
-            //Get all the diffs. Copies them in diffdirectory.
-            var diffs = CompareDirectory(oldDirectory, newDirectory);
+            //Get all the non-dll differences. Copies them in diffdirectory.
+            Console.WriteLine("Comparing non-dll files.");
+            var diffs = CompareDirectories(oldDirectory, newDirectory);
+
+            //Adds any dll differences.
+            Console.WriteLine("Comparing runtimes to find unique and updated binaries.");
+            var diffdlls = ParseDependencies.CompareBinaryDirectories(oldDirectory, newDirectory);
+            diffs.AddRange(diffdlls);
+
             foreach (var diff in diffs)
             {
                 string relpath = Path.GetRelativePath(newDirectory.FullName, diff.DirectoryName);
@@ -108,7 +115,7 @@ namespace filediff
         /// <param name="olddirectory">The old directory. Files/folder that don't exist in here will be added in differences.</param>
         /// <param name="newdirectory">The new directory. Files/folder here that don't exist in old will be added.</param>
         /// <returns>A <see cref="List{FileInfo}"/> of differences found in new but not in old.</returns>
-        List<FileInfo> CompareDirectory(DirectoryInfo olddirectory, DirectoryInfo newdirectory)
+        List<FileInfo> CompareDirectories(DirectoryInfo olddirectory, DirectoryInfo newdirectory)
         {
             var diffs = new List<FileInfo>();
 
@@ -116,7 +123,6 @@ namespace filediff
             var oldfiles = olddirectory.GetFiles();
             var newfiles = newdirectory.GetFiles();
 
-            Console.WriteLine("Comparing files.");
             foreach (var newfile in newfiles)
             {
                 //Skips ignore files.
@@ -162,7 +168,7 @@ namespace filediff
                 else
                 {
                     var olddir = olddirs.Where(X => X.Name == newdir.Name).First();
-                    var subdiffs = CompareDirectory(olddir, newdir);
+                    var subdiffs = CompareDirectories(olddir, newdir);
                     diffs.AddRange(subdiffs);
                 }
             }

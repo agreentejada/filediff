@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 
 namespace filediff
 {
@@ -19,8 +20,12 @@ namespace filediff
             //MeasureBinaries.Test(oldpath, newpath);
 
             //Attempt to extract deps.json.
-            string depspath = Path.Combine(oldpath, "DropboxClient.deps.json");
-            var result = ParseDependencies.Import(depspath);
+            string olddepspath = Path.Combine(oldpath, "DropboxClient.deps.json");
+            string newdepspath = Path.Combine(newpath, "DropboxClient.deps.json");
+            var result = ParseDependencies.CompareRuntimes(ParseDependencies.Import(olddepspath),
+                ParseDependencies.Import(newdepspath));
+
+            Console.WriteLine(JsonSerializer.Serialize(result));
         }
     }
 }

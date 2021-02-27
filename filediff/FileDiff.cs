@@ -59,7 +59,7 @@ namespace filediff
         }
 
         /// <summary>
-        /// Compares the directories, and returns all the diff files into publishdirectory/<see cref="PublishName"/>.
+        /// Compares the directories, and returns all the diff files into publishdirectory. Binary files rely on {project}.deps.json to be compared.<see cref="PublishName"/>.
         /// </summary>
         public void Compare()
         {
@@ -120,7 +120,7 @@ namespace filediff
             foreach (var newfile in newfiles)
             {
                 //Skips ignore files.
-                if (IgnoreFiles.Contains(newfile.Extension))
+                if (IgnoreFiles.Contains(newfile.Extension) || newfile.Extension == ".dll")
                 {
                     continue;
                 }
@@ -156,7 +156,7 @@ namespace filediff
                 if (!oldnames.Contains(newdir.Name))
                 {
                     var files = newdir.GetFiles("*", SearchOption.AllDirectories);
-                    var filtered = files.Where(X => !IgnoreFiles.Contains(X.Extension));
+                    var filtered = files.Where(X => !IgnoreFiles.Contains(X.Extension) || X.Extension == ".dll");
                     diffs.AddRange(filtered);
                 }
                 else

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace filediff
 {
@@ -15,7 +16,11 @@ namespace filediff
             //diffclient.Compare();
 
             //Testing a single file compared to other binaries.
-            MeasureBinaries.Test(oldpath, newpath);
+            //MeasureBinaries.Test(oldpath, newpath);
+
+            //Attempt to extract deps.json.
+            string depspath = Path.Combine(oldpath, "DropboxClient.deps.json");
+            var result = ParseDependencies.Import(depspath);
         }
     }
 }

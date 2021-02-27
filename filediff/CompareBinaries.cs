@@ -22,7 +22,7 @@ namespace filediff
             //Compare with all the directories in the newpath.
             var newdlls = new DirectoryInfo(newpath).GetFiles("*.dll", SearchOption.AllDirectories);
 
-            CompareSinglewithOthers(firstdll, newdlls.ToList());
+            CompareCopies(dlls, newdlls);
         }
 
         //Comparies the bytes of a single .dll with all other in a folder. One of these should be a copy.
@@ -47,10 +47,7 @@ namespace filediff
 
             //The copy makes a good control, since they should be similar.
             var copycomp = FindByteMistakes(origbytes, File.ReadAllBytes(copyfile.FullName));
-
-
-            Console.WriteLine($"{origfile.Name} COMP {copyfile.Name}, {copycomp.Count} MISTAKES, " +
-                $"{Math.Round((decimal)copycomp.Count*100/copyfile.Length)}% MISTAKE/BYTE.");
+            WriteMistakes(origfile, copyfile, origbytes.Length, copycomp.Count);
 
             foreach (var file in newfiles)
             {
@@ -61,20 +58,58 @@ namespace filediff
                 byte[] compare = File.ReadAllBytes(file.FullName).Take(shortestlength).ToArray();
 
                 var resultcomp = FindByteMistakes(correct, compare);
-                Console.WriteLine($"{origfile.Name} COMP {file.Name}, {resultcomp.Count} MISTAKES, " +
-                $"{Math.Round((decimal)resultcomp.Count * 100 / shortestlength)}% MISTAKE/BYTE.");
+                WriteMistakes(origfile, file, shortestlength, resultcomp.Count);
             }
         }
 
         //Compares all of the mistakes of copy dlls.
         public static void CompareCopies(FileInfo[] origfiles, FileInfo[] newfiles)
         {
-            foreach (var item in collection)
-            {
+            long totalbytes = 0;
+            long totalmistakes = 0;
+            List<decimal> percents = new List<decimal>();
 
+            foreach (var origfile in origfiles)
+            {
+                var copy = newfiles.Where(X => X.Name == origfile.Name && X.Length == origfile.Length);
+
+                if (!copy.Any())
+                {
+                    continue;
+                }
+
+                var copyfile = copy.First();
+                int shortestlength = (int)(copyfile.Length < origfile.Length ? copyfile.Length : origfile.Length);
+                byte[] correct = File.ReadAllBytes(origfile.FullName).Take(shortestlength).ToArray();
+                byte[] compare = File.ReadAllBytes(copyfile.FullName).Take(shortestlength).ToArray();
+
+                var copycomp = FindByteMistakes(correct, compare);
+
+                //Remove all the ones that have no mistakes.
+                if (copycomp.Count == 0)
+                {
+                    continue;
+                }
+
+                WriteMistakes(origfile, copyfile, shortestlength, copycomp.Count);
+
+                decimal ratio = Math.Round((decimal)copycomp.Count * 100 / shortestlength, 2);
+
+                totalbytes += shortestlength;
+                totalmistakes += copycomp.Count;
+                percents.Add(ratio);
             }
+
+            Console.WriteLine($"{totalbytes} compared, {totalmistakes} found. Total AVG {Math.Round((decimal)totalmistakes*100 / totalbytes, 2)}");
+            Console.WriteLine($"Average ratio of ratios: {Math.Round(percents.Average(), 2)}");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(percents));
         }
 
+        public static void WriteMistakes(FileInfo orig, FileInfo comp, int length, int mistakes)
+        {
+            Console.WriteLine($"{orig.Name} COMP {comp.Name}\t{mistakes} MISTAKES, " +
+            $"{Math.Round((decimal)mistakes * 100 / length, 2), 10}% MISTAKE/BYTE.");
+        }
 
         public static Dictionary<int, byte> FindByteMistakes(byte[] correct, byte[] compare)
         {
@@ -87,7 +122,6 @@ namespace filediff
                     dict.Add(i, (byte)(correct[i] - compare[i]));
                 }
             }
-
             return dict;
         }
     }

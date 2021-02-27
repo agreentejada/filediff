@@ -13,7 +13,7 @@ namespace filediff
             string newpath = @"D:\Documents\Coding\filediff\publish";
             string publishpath = @"D:\Documents\Coding\filediff";
 
-            var diffclient = new FileDiff(oldpath, newpath, publishpath);
+            var diffclient = new DirectoryComparer(oldpath, newpath, publishpath);
             diffclient.Compare();
 
             //Testing a single file compared to other binaries.

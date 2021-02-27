@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace filediff
 {
     /// <summary>
     /// This class compares all files in two directories on a byte-by-byte basis. Differences found in the new file are place inside a new folder.
     /// </summary>
-    public class FileDiff
+    public class DirectoryComparer
     {
         DirectoryInfo oldDirectory;
         DirectoryInfo newDirectory;
         DirectoryInfo publishDirectory;
 
+        /// <summary>
         /// <summary>
         /// Developer extension files that will be ignored in comparison. By default, *.pdb files will get ignored.
         /// </summary>
@@ -38,7 +37,7 @@ namespace filediff
         /// <param name="oldDirectory">The path for the old directory.</param>
         /// <param name="newDirectory">The path of the new directory.</param>
         /// <param name="publishDirectory">The path where the publish directory will go.</param>
-        public FileDiff(string oldPath, string newPath, string publishPath)
+        public DirectoryComparer(string oldPath, string newPath, string publishPath)
         {
             if (!Directory.Exists(oldPath))
             {
@@ -59,7 +58,7 @@ namespace filediff
         }
 
         /// <summary>
-        /// Compares the directories, and returns all the diff files into publishdirectory. Binary files rely on {project}.deps.json to be compared.<see cref="PublishName"/>.
+        /// Compares the directories, and returns all the diff files into publishdirectory. Binary files rely on {project}.deps.json to be compared.
         /// </summary>
         public void Compare()
         {

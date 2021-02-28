@@ -22,4 +22,4 @@ diffclient.IgnoredExtensions.Add(".log");
 diffclient.Compare();
 ```
 
-Nuget Package: https://www.nuget.org/packages/CoreCompare/1.0.0#
+Nuget Package: https://www.nuget.org/packages/CoreCompare/

@@ -9,8 +9,8 @@ namespace filediff
         static void Main(string[] args)
         {
             //FileDiff test for publishing an update.
-            string oldpath = @"D:\Documents\Coding\filediff\test";
-            string newpath = @"D:\Documents\Coding\filediff\test 1";
+            string oldpath = @"C:\Users\ramsi\source\repos\sark\publish\v1.0.0.0";
+            string newpath = @"C:\Users\ramsi\source\repos\sark\publish\sark-move";
             string publishpath = @"D:\Documents\Coding\filediff";
 
             var diffclient = new DirectoryComparer(oldpath, newpath, publishpath);

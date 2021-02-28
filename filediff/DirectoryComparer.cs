@@ -92,8 +92,17 @@ namespace filediff
 
                 try
                 {
-                    File.Copy(diff.FullName, Path.Combine(reldir.FullName, diff.Name));
-                    Console.WriteLine($"Copied file {diff.Name} from {diff.DirectoryName} to {reldir.FullName}.");
+                    string diffpath = diff.FullName;
+                    //Added exception for lib/netstandard
+                    if (!Directory.Exists(diff.DirectoryName) )
+                    {
+                       relpath = string.Empty;
+                       diffpath = Path.Combine(newDirectory.FullName, diff.Name);
+                        reldir = diffdirectory;
+                    }
+
+                    File.Copy(diffpath, Path.Combine(reldir.FullName, diff.Name));
+                    Console.WriteLine($"Copied file {diff.Name} from {diffpath} to {Path.Combine(reldir.FullName, diff.Name)}.");
                 }
                 catch (FileNotFoundException exc)
                 {

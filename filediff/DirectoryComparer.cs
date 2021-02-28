@@ -19,7 +19,7 @@ namespace filediff
         /// <summary>
         /// Developer extension files that will be ignored in comparison. By default, *.pdb files will get ignored.
         /// </summary>
-        public string[] IgnoreFiles { get; set; } = { ".pdb" };
+        public List<string> IgnoredExtensions { get; set; } = new List<string>(){ ".pdb" };
 
         /// <summary>
         /// Name of the directory where differences are stored. Will delete all the contents of old folder on refresh.
@@ -76,21 +76,30 @@ namespace filediff
             }
 
             //Get all the non-dll differences. Copies them in diffdirectory.
-            Console.WriteLine("Comparing non-dll files.");
+            Console.WriteLine("\r\nComparing non-dll files.");
             var diffs = CompareDirectories(oldDirectory, newDirectory);
 
             //Adds any dll differences.
-            Console.WriteLine("Comparing runtimes to find unique and updated binaries.");
+            Console.WriteLine("\r\nComparing runtimes to find unique and updated binaries.");
             var diffdlls = CompareDependencies.ComparyBinaryDirectories(oldDirectory, newDirectory);
             diffs.AddRange(diffdlls);
 
+            Console.WriteLine($"\r\nCopying files to {publishDirectory.Name}.");
             foreach (var diff in diffs)
             {
                 string relpath = Path.GetRelativePath(newDirectory.FullName, diff.DirectoryName);
                 var reldir = Directory.CreateDirectory(Path.Combine(diffdirectory.FullName, relpath));
 
-                Console.WriteLine($"Copying file {diff.Name} from {diff.DirectoryName} to {reldir.FullName}.");
-                File.Copy(diff.FullName, Path.Combine(reldir.FullName, diff.Name));
+                try
+                {
+                    File.Copy(diff.FullName, Path.Combine(reldir.FullName, diff.Name));
+                    Console.WriteLine($"Copied file {diff.Name} from {diff.DirectoryName} to {reldir.FullName}.");
+                }
+                catch (FileNotFoundException exc)
+                {
+                    Console.WriteLine("ERROR:\t" + exc.Message);
+                }
+
             }
 
             //Creates a ZIP files if needed.
@@ -103,7 +112,7 @@ namespace filediff
                     File.Delete(zippath);
                 }
 
-                Console.WriteLine("Creating ZIP file at " + zippath + ".");
+                Console.WriteLine("\r\nCreating ZIP file at " + zippath + ".");
                 ZipFile.CreateFromDirectory(diffdirectory.FullName, zippath);
             }
         }
@@ -125,7 +134,7 @@ namespace filediff
             foreach (var newfile in newfiles)
             {
                 //Skips ignore files.
-                if (IgnoreFiles.Contains(newfile.Extension) || newfile.Extension == ".dll")
+                if (IgnoredExtensions.Contains(newfile.Extension) || newfile.Extension == ".dll")
                 {
                     continue;
                 }
@@ -161,7 +170,7 @@ namespace filediff
                 if (!oldnames.Contains(newdir.Name))
                 {
                     var files = newdir.GetFiles("*", SearchOption.AllDirectories);
-                    var filtered = files.Where(X => !IgnoreFiles.Contains(X.Extension) || X.Extension == ".dll");
+                    var filtered = files.Where(X => !IgnoredExtensions.Contains(X.Extension) || X.Extension == ".dll");
                     diffs.AddRange(filtered);
                 }
                 else

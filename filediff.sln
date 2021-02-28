@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "filediff", "filediff\filediff.csproj", "{9132D79C-06DA-4F92-90E8-8A9FF1BF2CDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "filediff", "filediff\filediff.csproj", "{9132D79C-06DA-4F92-90E8-8A9FF1BF2CDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreCompare", "CoreCompare\CoreCompare.csproj", "{9DD46540-36A8-4990-B9EC-498F7CCF663D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{9132D79C-06DA-4F92-90E8-8A9FF1BF2CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9132D79C-06DA-4F92-90E8-8A9FF1BF2CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9132D79C-06DA-4F92-90E8-8A9FF1BF2CDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD46540-36A8-4990-B9EC-498F7CCF663D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD46540-36A8-4990-B9EC-498F7CCF663D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD46540-36A8-4990-B9EC-498F7CCF663D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD46540-36A8-4990-B9EC-498F7CCF663D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

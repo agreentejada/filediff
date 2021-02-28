@@ -11,7 +11,7 @@ namespace filediff
             //FileDiff test for publishing an update.
             string oldpath = @"C:\Users\ramsi\source\repos\sark\publish\v1.0.0.0";
             string newpath = @"C:\Users\ramsi\source\repos\sark\publish\sark-move";
-            string publishpath = @"D:\Documents\Coding\filediff";
+            string publishpath = @"C:\Users\ramsi\source\repos\sark\publish\";
 
             var diffclient = new DirectoryComparer(oldpath, newpath, publishpath);
             diffclient.CreateZIP = true;

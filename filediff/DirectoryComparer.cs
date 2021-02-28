@@ -87,8 +87,8 @@ namespace filediff
             Console.WriteLine($"\r\nCopying files to {publishDirectory.Name}.");
             foreach (var diff in diffs)
             {
-                string relpath = Path.GetRelativePath(newDirectory.FullName, diff.DirectoryName);
-                var reldir = Directory.CreateDirectory(Path.Combine(diffdirectory.FullName, relpath));
+                string relpath = null;
+                DirectoryInfo reldir = null;
 
                 try
                 {
@@ -99,6 +99,11 @@ namespace filediff
                        relpath = string.Empty;
                        diffpath = Path.Combine(newDirectory.FullName, diff.Name);
                         reldir = diffdirectory;
+                    }
+                    else
+                    {
+                        relpath = Path.GetRelativePath(newDirectory.FullName, diff.DirectoryName);
+                        reldir = Directory.CreateDirectory(Path.Combine(diffdirectory.FullName, relpath));
                     }
 
                     File.Copy(diffpath, Path.Combine(reldir.FullName, diff.Name));

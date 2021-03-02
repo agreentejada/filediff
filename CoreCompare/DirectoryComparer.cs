@@ -19,7 +19,7 @@ namespace CoreCompare
         /// <summary>
         /// Developer extension files that will be ignored in comparison. By default, *.pdb files will get ignored.
         /// </summary>
-        public List<string> IgnoredExtensions { get; set; } = new List<string>();
+        public List<string> IgnoredExtensions { get; set; } = new List<string>() { ".pdb"};
 
         /// <summary>
         /// Name of the directory where differences are stored. Will delete all the contents of old folder on refresh.
@@ -82,11 +82,6 @@ namespace CoreCompare
             //Adds any dll length differences.
             Console.WriteLine("\r\nComparing dll files by length.");
             var difflengthdlls = CompareDirectories(oldDirectory, newDirectory, BinariesAboutEqual);
-
-            //Adds any dll non-length differences.
-            Console.WriteLine("\r\nComparing runtimes to find unique and updated binaries.");
-            var diffdlls = CompareDependencies.CompareRuntimes(oldDirectory, newDirectory);
-            diffs.AddRange(diffdlls.Where(X => !diffs.Contains(X)));
 
             Console.WriteLine($"\r\nCopying files to {publishDirectory.Name}.");
             foreach (var diff in diffs)

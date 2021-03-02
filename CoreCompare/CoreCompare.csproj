@@ -1,7 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>A small library for comparing published .NET Core directories. Uses the Microsoft.Extensions.DependencyModel library to compare .dll files.</Description>
+    <Copyright>@2021 AGreenTejada</Copyright>
+    <PackageProjectUrl>https://github.com/agreentejada/filediff</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/agreentejada/filediff</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>diff, filecomparer</PackageTags>
+    <PackageReleaseNotes>Not every binary difference is recorded in binary diff. Compared file length for quick comparison.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

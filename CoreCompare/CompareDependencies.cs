@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyModel;
 
-namespace filediff
+namespace CoreCompare
 {
     public static class CompareDependencies
     {
@@ -13,7 +13,7 @@ namespace filediff
         /// uncomparable, or new to new directory.
         /// </summary>
         /// <returns>A <see cref="List{FileInfo}"/> of <see cref="RuntimeFile.Path"/> unique or new to <paramref name="newDirectory"/>.</returns>
-        public static List<FileInfo> ComparyBinaryDirectories(DirectoryInfo oldDirectory, DirectoryInfo newDirectory)
+        public static List<FileInfo> CompareRuntimes(DirectoryInfo oldDirectory, DirectoryInfo newDirectory)
         {
             var olddepquery = oldDirectory.GetFiles("*.deps.json", SearchOption.AllDirectories);
             var newdepquery = newDirectory.GetFiles("*.deps.json", SearchOption.AllDirectories);
@@ -32,7 +32,7 @@ namespace filediff
 
             //Retrieve a list of runtimeFiles that compare old and new, the relative paths of the runtime files should
             //match with real paths in newDirectory.
-            var extractedruntimes = CompareRuntimes(oldcontext, newcontext);
+            var extractedruntimes = CompareRuntimeFiles(oldcontext, newcontext);
 
             List<FileInfo> diffdlls = new List<FileInfo>();
             foreach (var extract in extractedruntimes)
@@ -52,7 +52,7 @@ namespace filediff
         }
 
         //Now that the JSON has been parsed, it'll be pretty simple to check for version update in new and extract them.
-        static List<RuntimeFile> CompareRuntimes(DependencyContext oldctxt, DependencyContext newctxt)
+        static List<RuntimeFile> CompareRuntimeFiles(DependencyContext oldctxt, DependencyContext newctxt)
         {
             List<RuntimeFile> extractedFiles = new List<RuntimeFile>();
 

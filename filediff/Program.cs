@@ -2,16 +2,16 @@
 using System.IO;
 using System.Text.Json;
 
-namespace filediff
+namespace CoreCompare
 {
     class Program
     {
         static void Main(string[] args)
         {
             //FileDiff test for publishing an update.
-            string oldpath = @"C:\Users\ramsi\source\repos\sark\publish\v1.0.0.0";
-            string newpath = @"C:\Users\ramsi\source\repos\sark\publish\sark-move";
-            string publishpath = @"C:\Users\ramsi\source\repos\sark\publish\";
+            string newpath = @"D:\Documents\Coding\DropboxClient\publish";
+            string oldpath = @"D:\Documents\Coding\DropboxClient\DropboxClientManager";
+            string publishpath = @"D:\Documents\Coding\DropboxClient";
 
             var diffclient = new DirectoryComparer(oldpath, newpath, publishpath);
             diffclient.CreateZIP = true;

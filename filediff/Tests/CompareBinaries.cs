@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 
-namespace filediff
+namespace CoreCompare
 {
     /* As per this issue, https://stackoverflow.com/questions/8927558/why-is-the-binary-output-not-equal-when-compiling-again,
      * we observe that a binary compiled over again has completely distinct metadata from the original compilation. However, if the only difference

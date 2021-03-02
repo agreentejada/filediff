@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace filediff
+namespace CoreCompare
 {
     /// <summary>
     /// This class compares all files in two directories on a byte-by-byte basis. Differences found in the new file are place inside a new folder.
@@ -19,7 +19,7 @@ namespace filediff
         /// <summary>
         /// Developer extension files that will be ignored in comparison. By default, *.pdb files will get ignored.
         /// </summary>
-        public List<string> IgnoredExtensions { get; set; } = new List<string>(){ ".pdb" };
+        public List<string> IgnoredExtensions { get; set; } = new List<string>();
 
         /// <summary>
         /// Name of the directory where differences are stored. Will delete all the contents of old folder on refresh.
@@ -77,12 +77,16 @@ namespace filediff
 
             //Get all the non-dll differences. Copies them in diffdirectory.
             Console.WriteLine("\r\nComparing non-dll files.");
-            var diffs = CompareDirectories(oldDirectory, newDirectory);
+            var diffs = CompareDirectories(oldDirectory, newDirectory, FilesAreEqual);
 
-            //Adds any dll differences.
+            //Adds any dll length differences.
+            Console.WriteLine("\r\nComparing dll files by length.");
+            var difflengthdlls = CompareDirectories(oldDirectory, newDirectory, BinariesAboutEqual);
+
+            //Adds any dll non-length differences.
             Console.WriteLine("\r\nComparing runtimes to find unique and updated binaries.");
-            var diffdlls = CompareDependencies.ComparyBinaryDirectories(oldDirectory, newDirectory);
-            diffs.AddRange(diffdlls);
+            var diffdlls = CompareDependencies.CompareRuntimes(oldDirectory, newDirectory);
+            diffs.AddRange(diffdlls.Where(X => !diffs.Contains(X)));
 
             Console.WriteLine($"\r\nCopying files to {publishDirectory.Name}.");
             foreach (var diff in diffs)
@@ -136,8 +140,9 @@ namespace filediff
         /// </summary>
         /// <param name="olddirectory">The old directory. Files/folder that don't exist in here will be added in differences.</param>
         /// <param name="newdirectory">The new directory. Files/folder here that don't exist in old will be added.</param>
+        /// <param name="comparer">A method that takes two files and returns if they are the same or not.</param>
         /// <returns>A <see cref="List{FileInfo}"/> of differences found in new but not in old.</returns>
-        List<FileInfo> CompareDirectories(DirectoryInfo olddirectory, DirectoryInfo newdirectory)
+        List<FileInfo> CompareDirectories(DirectoryInfo olddirectory, DirectoryInfo newdirectory, Func<FileInfo, FileInfo, bool> comparer)
         {
             var diffs = new List<FileInfo>();
 
@@ -158,7 +163,7 @@ namespace filediff
                 foreach (var oldfile in oldfiles)
                 {
                     //Compares each new file in the directory with each old file. If an old file is found to match the new, then the new file is thrown out.
-                    if (FilesAreEqual(newfile, oldfile))
+                    if (comparer(newfile, oldfile))
                     {
                         found = true;
                         break;
@@ -190,7 +195,7 @@ namespace filediff
                 else
                 {
                     var olddir = olddirs.Where(X => X.Name == newdir.Name).First();
-                    var subdiffs = CompareDirectories(olddir, newdir);
+                    var subdiffs = CompareDirectories(olddir, newdir, comparer);
                     diffs.AddRange(subdiffs);
                 }
             }
@@ -227,6 +232,18 @@ namespace filediff
                         return false;
                 }
             }
+
+            return true;
+        }
+
+        //A quick comparison to see if the binaries are really the same length or not.
+        static bool BinariesAboutEqual(FileInfo first, FileInfo second)
+        {
+            if (first.Length != second.Length)
+                return false;
+
+            if (!string.Equals(first.Name, second.Name, StringComparison.OrdinalIgnoreCase))
+                return false;
 
             return true;
         }

@@ -8,7 +8,7 @@
     <RepositoryUrl>https://github.com/agreentejada/filediff</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>diff, filecomparer</PackageTags>
-    <PackageReleaseNotes>Not every binary difference is recorded in binary diff. Compared file length for quick comparison.</PackageReleaseNotes>
+    <PackageReleaseNotes>Refactored names.</PackageReleaseNotes>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>1.0.2</Version>
